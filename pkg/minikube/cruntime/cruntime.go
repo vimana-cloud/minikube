@@ -50,7 +50,7 @@ func (cs ContainerState) String() string {
 
 // ValidRuntimes lists the supported container runtimes
 func ValidRuntimes() []string {
-	return []string{"docker", "cri-o", "containerd"}
+	return []string{"docker", "cri-o", "containerd", "workd"}
 }
 
 // CommandRunner is the subset of command.Runner this package consumes
@@ -247,6 +247,14 @@ func New(c Config) (Manager, error) {
 			KubernetesVersion: c.KubernetesVersion,
 			Init:              sm,
 			InsecureRegistry:  c.InsecureRegistry,
+		}, nil
+	case "workd":
+		return &Workd{
+			Socket: c.Socket,
+			Runner: c.Runner,
+			//ImageRepository:   c.ImageRepository,
+			KubernetesVersion: c.KubernetesVersion,
+			Init:              sm,
 		}, nil
 	default:
 		return nil, fmt.Errorf("unknown runtime type: %q", c.Type)

@@ -138,6 +138,7 @@ var Config = map[Enum]Options{
 	Unmount:          {Prefix: "🔥  "},
 	VerifyingNoLine:  {Prefix: "🤔  ", OmitNewline: true},
 	Verifying:        {Prefix: "🤔  "},
+	Workd:            {Prefix: "🪽  "},
 	CNI:              {Prefix: "🔗  "},
 	Toolkit:          {Prefix: "🛠️   "},
 }
