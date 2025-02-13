@@ -1,0 +1,41 @@
+name: Release
+on:
+  release:
+    types: ['released']
+permissions:
+  # Necessary to upload a release asset:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: |
+          # Build with cgo disabled to ensure the binary is statically-linked.
+          CGO_ENABLED=0 make \
+            minikube-linux-amd64 \
+            minikube-linux-arm64 \
+            minikube-darwin-amd64 \
+            minikube-darwin-arm64
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          for platform in 'linux-amd64' 'linux-arm64' 'darwin-amd64' 'darwin-arm64'
+          do
+            # Use `--transform` to name each binary plain `minikube` within its archive.
+            tar --create --gzip \
+              --file="minikube-${platform}.tar.gz" \
+              --transform="s/minikube-${platform}/minikube/" \
+              --directory=out \
+              "minikube-${platform}"
+          done
+
+          gh release upload "${RELEASE_TAG}" \
+            'minikube-linux-amd64.tar.gz' \
+            'minikube-linux-arm64.tar.gz' \
+            'minikube-darwin-amd64.tar.gz' \
+            'minikube-darwin-arm64.tar.gz'
