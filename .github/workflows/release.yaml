@@ -1,0 +1,31 @@
+name: Release
+on:
+  release:
+    types: ['released']
+permissions:
+  # Necessary to upload a release asset:
+  contents: write
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build
+        run: make minikube-linux-amd64 minikube-darwin-amd64
+      - name: Upload Release Assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          # Use `--transform` to name each binary plain `minikube` within its archive.
+          tar -czf minikube-linux-amd64.tar.gz \
+            --directory=out minikube-linux-amd64 \
+            --transform='s/minikube-linux-amd64/minikube/'
+          tar -czf minikube-darwin-amd64.tar.gz \
+            --directory=out minikube-darwin-amd64 \
+            --transform='s/minikube-darwin-amd64/minikube/'
+
+          gh release upload "${RELEASE_TAG}" \
+            minikube-linux-amd64.tar.gz \
+            minikube-darwin-amd64.tar.gz
