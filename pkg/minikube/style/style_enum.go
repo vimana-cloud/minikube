@@ -104,6 +104,7 @@ const (
 	WaitingPods
 	Warning
 	Workaround
+	Workd
 	CNI
 	Toolkit
 )

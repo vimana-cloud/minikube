@@ -192,6 +192,10 @@ func generateContainerdConfig(cr CommandRunner, imageRepository string, kv semve
 		}
 	}
 
+	return configureContainerdInsecureRegistries(cr, insecureRegistry)
+}
+
+func configureContainerdInsecureRegistries(cr CommandRunner, insecureRegistry []string) error {
 	for _, registry := range insecureRegistry {
 		addr := registry
 		if strings.HasPrefix(strings.ToLower(registry), "http://") || strings.HasPrefix(strings.ToLower(registry), "https://") {
