@@ -209,19 +209,22 @@ func (r *Workd) KubeletOptions() map[string]string {
 // ListContainers returns a list of containers managed by this runtime.
 func (r *Workd) ListContainers(options ListContainersOptions) ([]string, error) {
 	klog.Infof("Workd.ListContainers(%#v)", options)
-	return listCRIContainers(r.Runner, "vimana", options)
+	// Invoked to check on kube-system containers, so use the containerd namespace root.
+	return listCRIContainers(r.Runner, containerdNamespaceRoot, options)
 }
 
 // PauseContainers pauses a running container based on ID.
 func (r *Workd) PauseContainers(ids []string) error {
 	klog.Infof("Workd.PauseContainers(%#v)", ids)
-	return pauseCRIContainers(r.Runner, "vimana", ids)
+	// Invoked to check on kube-system containers, so use the containerd namespace root.
+	return pauseCRIContainers(r.Runner, containerdNamespaceRoot, ids)
 }
 
 // UnpauseContainers unpauses a running container based on ID.
 func (r *Workd) UnpauseContainers(ids []string) error {
 	klog.Infof("Workd.UnpauseContainers(%#v)", ids)
-	return unpauseCRIContainers(r.Runner, "vimana", ids)
+	// Invoked to check on kube-system containers, so use the containerd namespace root.
+	return unpauseCRIContainers(r.Runner, containerdNamespaceRoot, ids)
 }
 
 // KillContainers removes containers based on ID.
