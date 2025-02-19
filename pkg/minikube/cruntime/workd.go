@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"os/exec"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/blang/semver/v4"
@@ -64,7 +65,14 @@ func (r *Workd) Version() (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "workd --version")
 	}
-	return rr.Stdout.String(), nil
+	output := rr.Stdout.String()
+	// We expect the output to be e.g. `workd 1.2.3`,
+	// so return everything after the last space, e.g. `1.2.3`.
+	index := strings.LastIndex(output, " ")
+	if index == -1 {
+		return "", errors.New("Unexpected output from `workd --version`")
+	}
+	return output[index+1:], nil
 }
 
 // SocketPath returns the path to the socket file for the Vimana work runtime.
