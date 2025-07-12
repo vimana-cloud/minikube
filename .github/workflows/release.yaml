@@ -6,16 +6,16 @@ permissions:
   # Necessary to upload a release asset:
   contents: write
 jobs:
-  linux:
-    # Run on the earliest available version of Ubuntu
-    # to maximize glibc compatibility.
-    runs-on: ubuntu-22.04
+  release:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
-        run: make minikube-linux-amd64 minikube-darwin-amd64
-      - name: Upload Release Assets
+        run: |
+          # Build with cgo disabled to ensure the binary is statically-linked.
+          CGO_ENABLED=0 make minikube-linux-amd64 minikube-darwin-amd64
+      - name: Upload release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ github.ref_name }}
