@@ -7,7 +7,9 @@ permissions:
   contents: write
 jobs:
   linux:
-    runs-on: ubuntu-latest
+    # Run on the earliest available version of Ubuntu
+    # to maximize glibc compatibility.
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
