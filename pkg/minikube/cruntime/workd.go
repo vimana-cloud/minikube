@@ -141,7 +141,14 @@ func (r *Workd) Enable(disOthers bool, cgroupDriver string, inUserNamespace bool
 		return err
 	}
 
+	// Configure insecure regsitries for `workd`.
 	if err := generateWorkdConfig(r.Runner, r.InsecureRegistry); err != nil {
+		return err
+	}
+
+	// Also configure insecure regsitries for `containerd`
+	// so that pods using the downstream runtime can pull them too.
+	if err := configureContainerdInsecureRegistries(r.Runner, r.InsecureRegistry); err != nil {
 		return err
 	}
 
